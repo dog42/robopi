@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 
   char buffer[256];
   if (argc != 5) {
-    fprintf(stderr, "usage %s hostname port devicepath PS3(0/1)\n e.g.: sudo ./robo_control 192.168.1.215 5005 /dev/hidraw3 1", argv[0]);
+    fprintf(stderr, "usage: %s hostname port devicepath PS3(0/1)\ne.g.: sudo %s 192.168.1.215 5005 /dev/hidraw3 1\n", argv[0], argv[0] );
     exit(0);
   }
   portno = atoi(argv[2]);

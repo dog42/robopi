@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc -o robo -lwiringPi -lwiringPiDev -lpthread -lm robo_control.c
+gcc -o robo_control -pthread -lm robo_control.c

@@ -18,8 +18,8 @@
 #include <wiringPi.h>
 #include <inttypes.h> 
  
-#define TRIG 1
-#define ECHO 0
+#define TRIG_PIN 1
+#define ECHO_PIN 0
 uint32_t dead=0;
 #define maxdead 20000
 int fd,fd2;
@@ -54,30 +54,30 @@ int gpiowrite(int d){
 }
 void setup() {
         wiringPiSetup();
-        pinMode(TRIG, OUTPUT);
+        pinMode(TRIG_PIN, OUTPUT);
 //        pinMode(LED, OUTPUT);
-        pinMode(ECHO, INPUT);
+        pinMode(ECHO_PIN, INPUT);
  
-        //TRIG pin must start LOW
-        digitalWrite(TRIG, LOW);
+        //TRIG_PIN pin must start LOW
+        digitalWrite(TRIG_PIN, LOW);
         delay(30);
 }
  
 uint16_t getCM() {
-        //Send trig pulse
+        //Send TRIG_PIN pulse
         delayMicroseconds(3000);
-        digitalWrite(TRIG, HIGH);
+        digitalWrite(TRIG_PIN, HIGH);
         delayMicroseconds(20);
-        digitalWrite(TRIG, LOW);
+        digitalWrite(TRIG_PIN, LOW);
  
-        //Wait for echo start
+        //Wait for ECHO_PIN start
         dead=0;
-        while(digitalRead(ECHO) == LOW){dead++;if(dead>=maxdead)break;};
+        while(digitalRead(ECHO_PIN) == LOW){dead++;if(dead>=maxdead)break;};
  
-        //Wait for echo end
+        //Wait for ECHO_PIN end
         long startTime = micros();
         dead=0;
-        while(digitalRead(ECHO) == HIGH){dead++;if(dead>=maxdead)break;};
+        while(digitalRead(ECHO_PIN) == HIGH){dead++;if(dead>=maxdead)break;};
         long travelTime = micros() - startTime;
 
         //Get distance in cm
@@ -197,7 +197,7 @@ int main( int argc, char *argv[] )
      */
     listen(sockfd,5);
     clilen = sizeof(cli_addr);
-    printf("warte auf Verbindung an PORT: %d  ...\n",portno);
+    printf("warte auf Verbindung an PORT: %d  ... :p\n",portno);
     while (1) 
     {
         newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
