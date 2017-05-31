@@ -1,7 +1,8 @@
 #!/bin/bash
 ./asurostart.sh &
-#./startcam.sh &
+./startcam.sh $1 $2 &
+echo '>>>> WAIT...'
 sleep 5
-echo LOS
 robo/robo
-#killall gst-launch-1.0
+killall gst-launch-1.0
+killall robo

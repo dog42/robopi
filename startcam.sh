@@ -11,7 +11,7 @@ elif [[ $# == 2 ]]
 	port=$2
 fi
 
-echo Verbinde zu: $ip:$port
+echo ">>>> CONNECT TO: $ip:$port"
 
 gst-launch-1.0 rpicamsrc bitrate=1000000 \
     ! 'video/x-h264,width=640,height=480' \
