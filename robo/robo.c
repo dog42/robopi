@@ -109,7 +109,7 @@ void *doprocessing (void *arg)
 
 
 if(strncmp(buffer,"DVOR",4)==0)
-	{gpiowrite(2);
+	{gpiowrite(1);
 	//sleep(1);
 //	printf("%s\n",buffer);
 	}
@@ -124,7 +124,7 @@ else if(strncmp(buffer,"DREC",4)==0)
 //	printf("%s\n",buffer);
 	}
 else if(strncmp(buffer,"DRUC",4)==0)
-	{gpiowrite(1);
+	{gpiowrite(2);
 	//sleep(1);
 //	printf("%s\n",buffer);
 	}
