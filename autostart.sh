@@ -1,4 +1,5 @@
 #!/bin/bash
-./asurostart.sh
+./asurostart.sh &
+./startcam.sh &
 robo/robo
 
