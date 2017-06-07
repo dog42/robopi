@@ -83,7 +83,7 @@ void *thread(void *arg) {
     med[index] = value;
     median = (med[0] + med[1] + med[2] + med[3] + med[4]) / 5;
 //printf("value:%d\n",value);
-    if (median < 17)if ((value < 10) && (value > 5)) {
+    if (median < 17)if ((value < 17) && (value > 5)) {
         printf("%d stop!\n", value);
 
         strcpy(buffer, "0\n");
