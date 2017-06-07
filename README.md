@@ -11,7 +11,7 @@
 
 * run `sudo apt-get update && sudo apt-get install gstreamer1.0`
 
-* install gstreamer1.0-plugin `gst-rpicamsrc`: 
+* install gstreamer1.0-plugin [gst-rpicamsrc from thaytan](https://github.com/thaytan/gst-rpicamsrc): 
 
 	```apt-get install git autoconf automake libtool pkg-config libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libraspberrypi-dev```
 
