@@ -109,9 +109,9 @@ void *doprocessing (void *arg)
     struct msg buffer;
 
     while (1) {
-        bzero(&buffer, sizeof(buffer));
+        bzero(&buffer, sizeof(buffer)-1);
 
-        n = read(newsockfd, &buffer, sizeof(buffer));
+        n = read(newsockfd, &buffer, sizeof(buffer)-1);
         if (n < 0)
         {
             perror("ERROR reading from socket");
@@ -154,14 +154,14 @@ void *uschall (void *arg)
     struct msg buffer;
     uint16_t dist;
     while (1) {
-        bzero(&buffer, sizeof(buffer));
+        bzero(&buffer, sizeof(buffer)-1);
         dist = getCM();
         sprintf(buffer.cmd, "%.2d", dist);
         //printf("%.2d\n", dist);
         //strcpy(buffer.cmd,"moep\n");
         //write(newsockfd, dist, sizeof(dist));
-        //    n = read(newsockfd,buffer,sizeof(buffer));
-        n = write(newsockfd, &buffer, sizeof(buffer));
+        //    n = read(newsockfd,buffer,sizeof(buffer)-1);
+        n = write(newsockfd, &buffer, sizeof(buffer)-1);
         if (n < 0) {error("ERROR writing to socket");}
     }
 }
