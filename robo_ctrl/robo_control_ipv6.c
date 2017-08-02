@@ -25,6 +25,12 @@ int i;
 int res, x = 0;
 int ps3 = 1;
 
+struct msg {
+  char cmd[256];
+  int val;
+  int loop;
+};
+
 
 int kbhit(void)
 {
@@ -58,25 +64,28 @@ void error(const char *msg)
   exit(0);
 }
 
-void INThandler() {
+void INThandler()
+{
   exit(0);
 }
-void *thread(void *arg) {
-  char buffer[256];
+
+void *thread(void *arg)
+{
+  struct msg buffer;
   uint16_t value, med[5], median, index;
   int n;
   printf("wallthead running\n");
   while (1) {
-    bzero(buffer, 256);
+    bzero(&buffer, sizeof(buffer));
 
-    n = read(sockfd, buffer, 2);
+    n = read(sockfd, buffer.cmd, 2);
     if (n < 0)
     {
       perror("ERROR reading from socket");
       exit(1);
     }
 
-    value = atoi(buffer);
+    value = atoi(buffer.cmd);
 //printf("%d\n",value);
     index++;
     if (index >= 5)index = 0;
@@ -86,9 +95,9 @@ void *thread(void *arg) {
     if (median < 17)if ((value < 17) && (value > 5)) {
         printf("%d stop!\n", value);
 
-        strcpy(buffer, "0\n");
+        strcpy(buffer.cmd, "0\n");
 //usleep(100000);
-        n = write(sockfd, buffer, strlen(buffer));
+        n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
         if (n < 0) {error("ERROR writing to socket");}
 
       }
@@ -105,7 +114,7 @@ int main(int argc, char** argv)
   pthread_t thread1;
 //pthread_init();
 
-  char buffer[256];
+  struct msg buffer;
   if (argc != 5) {
     fprintf(stderr, "usage: %s hostname port devicepath PS3(0/1)\ne.g.: sudo %s 192.168.1.215 5005 /dev/hidraw3 1\n", argv[0], argv[0] );
     exit(0);
@@ -116,16 +125,16 @@ int main(int argc, char** argv)
   sockfd = socket(AF_INET6, SOCK_STREAM, 0);
   if (sockfd < 0)
     error("ERROR opening socket");
-  server = gethostbyname2(argv[1],AF_INET6);
+  server = gethostbyname2(argv[1], AF_INET6);
   if (server == NULL) {
     fprintf(stderr, "ERROR, no such host\n");
     exit(0);
   }
-	memset((char *) &serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin6_flowinfo = 0;
-    serv_addr.sin6_family = AF_INET6;
-    memmove((char *) &serv_addr.sin6_addr.s6_addr, (char *) server->h_addr, server->h_length);
-    serv_addr.sin6_port = htons(portno);
+  memset((char *) &serv_addr, 0, sizeof(serv_addr));
+  serv_addr.sin6_flowinfo = 0;
+  serv_addr.sin6_family = AF_INET6;
+  memmove((char *) &serv_addr.sin6_addr.s6_addr, (char *) server->h_addr, server->h_length);
+  serv_addr.sin6_port = htons(portno);
   if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
     error("ERROR connecting");
 
@@ -169,18 +178,18 @@ int main(int argc, char** argv)
       old = val;
 
       switch (send) {
-      case 1 : strcpy(buffer, "DRUC\n"); //w
+      case 1 : strcpy(buffer.cmd, "DRUC\n"); //w
         break;
-      case 8 : strcpy(buffer, "DREC\n"); //a
+      case 8 : strcpy(buffer.cmd, "DREC\n"); //a
         break;
-      case 4 : strcpy(buffer, "DVOR\n"); //s
+      case 4 : strcpy(buffer.cmd, "DVOR\n"); //s
         break;
-      case 2 : strcpy(buffer, "DLIN\n"); //d
+      case 2 : strcpy(buffer.cmd, "DLIN\n"); //d
         break;
-      default : strcpy(buffer, "0\n"); //d
+      default : strcpy(buffer.cmd, "0\n"); //d
 
       }
-      n = write(sockfd, buffer, strlen(buffer));
+      n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
       if (n < 0) {error("ERROR writing to socket");}
 
 
@@ -204,27 +213,27 @@ int main(int argc, char** argv)
       if (w + a + s + d) {
         if (w + a + s + d > 1) {
           switch (last) {
-          case 458778 : strcpy(buffer, "DRUC\n"); //w
+          case 458778 : strcpy(buffer.cmd, "DRUC\n"); //w
             break;
-          case 458756 : strcpy(buffer, "DREC\n"); //a
+          case 458756 : strcpy(buffer.cmd, "DREC\n"); //a
             break;
-          case 458774 : strcpy(buffer, "DVOR\n"); //s
+          case 458774 : strcpy(buffer.cmd, "DVOR\n"); //s
             break;
-          case 458759 : strcpy(buffer, "DLIN\n"); //d
+          case 458759 : strcpy(buffer.cmd, "DLIN\n"); //d
             break;
           }
         } else {
-          if (w) {strcpy(buffer, "DRUC\n");}
-          if (a) {strcpy(buffer, "DREC\n");}
-          if (s) {strcpy(buffer, "DVOR\n");}
-          if (d) {strcpy(buffer, "DLIN\n");}
+          if (w) {strcpy(buffer.cmd, "DRUC\n");}
+          if (a) {strcpy(buffer.cmd, "DREC\n");}
+          if (s) {strcpy(buffer.cmd, "DVOR\n");}
+          if (d) {strcpy(buffer.cmd, "DLIN\n");}
         }
       } else {
 
-        strcpy(buffer, "0\n");
+        strcpy(buffer.cmd, "0\n");
       }
       // usleep(500000);
-      n = write(sockfd, buffer, strlen(buffer));
+      n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
       if (n < 0) {error("ERROR writing to socket");}
     }
   }
