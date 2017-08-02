@@ -42,9 +42,9 @@ int i;
 int res, x = 0;
 
 struct msg {
-    char cmd[256];
-    int val;
-    int loop;
+    char cmd[10];
+    uint8_t val;
+    uint8_t loop;
 };
 
 int gpiowrite(int d)
@@ -111,14 +111,22 @@ void *doprocessing (void *arg)
     while (1) {
         bzero(&buffer, sizeof(buffer));
 
-        n = read(newsockfd, buffer.cmd, 255);
+        n = read(newsockfd, &buffer, sizeof(buffer));
         if (n < 0)
         {
             perror("ERROR reading from socket");
             exit(1);
         }
 
-        if (strncmp(buffer.cmd, "DVOR", 4) == 0)
+        if (buffer.loop > 0)
+        {
+          printf("loop: %d\n",buffer.loop );
+          buffer.loop = buffer.loop - 1;
+          printf("loop: %d\n",buffer.loop );
+          n = write(newsockfd, &buffer, sizeof(buffer));
+        }
+        else
+         if (strncmp(buffer.cmd, "DVOR", 4) == 0)
         {   gpiowrite(1);
             //sleep(1);
             //  printf("%s\n",buffer.cmd);
@@ -151,17 +159,17 @@ void *doprocessing (void *arg)
 void *uschall (void *arg)
 {
     int n;
-    struct msg buffer;
+    struct msg in_buffer;
     uint16_t dist;
     while (1) {
-        bzero(&buffer.cmd, 256);
+        bzero(&in_buffer, sizeof(in_buffer));
         dist = getCM();
-        sprintf(buffer.cmd, "%.2d", dist);
+        sprintf(in_buffer.cmd, "%.2d\n", dist);
         //printf("%.2d\n", dist);
         //strcpy(buffer.cmd,"moep\n");
         //write(newsockfd, dist, sizeof(dist));
         //    n = read(newsockfd,buffer.cmd,255);
-        n = write(newsockfd, buffer.cmd, strlen(buffer.cmd));
+        n = write(newsockfd, &in_buffer, sizeof(in_buffer));
         if (n < 0) {error("ERROR writing to socket");}
     }
 }
@@ -169,7 +177,7 @@ void *uschall (void *arg)
 int main( int argc, char *argv[] )
 {
     int sockfd, portno, clilen;
-    struct msg buffer;
+    
     struct sockaddr_in6 serv_addr, cli_addr;
     int  n, pid;
     char* strings[] = {"hello ", "world\n"};

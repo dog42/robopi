@@ -24,11 +24,13 @@ char Input;
 int i;
 int res, x = 0;
 int ps3 = 1;
+int stop = 0;
+int loop = 0;
 
 struct msg {
-  char cmd[256];
-  int val;
-  int loop;
+  char cmd[10];
+  uint8_t val;
+  uint8_t loop;
 };
 
 
@@ -71,38 +73,50 @@ void INThandler()
 
 void *thread(void *arg)
 {
-  struct msg buffer;
+  struct msg in_buffer;
+  struct msg out_buffer;
   uint16_t value, med[5], median, index;
   int n;
   printf("wallthead running\n");
   while (1) {
-    bzero(&buffer, sizeof(buffer));
-
-    n = read(sockfd, buffer.cmd, 2);
+    bzero(&in_buffer, sizeof(in_buffer));
+    bzero(&out_buffer, sizeof(out_buffer));
+    n = read(sockfd, &in_buffer, sizeof(in_buffer));
+    //printf("-->: %d\n", in_buffer.loop );
+    
     if (n < 0)
     {
       perror("ERROR reading from socket");
       exit(1);
     }
+    if (in_buffer.loop > 0)
+    {
+      printf("loop: %d\n", in_buffer.loop );
+      in_buffer.loop = in_buffer.loop - 1;
+      //printf("loop: %d\n",in_buffer.loop );
+      n = write(sockfd, &in_buffer, sizeof(in_buffer));
+    } else {
 
-    value = atoi(buffer.cmd);
-//printf("%d\n",value);
-    index++;
-    if (index >= 5)index = 0;
-    med[index] = value;
-    median = (med[0] + med[1] + med[2] + med[3] + med[4]) / 5;
-//printf("value:%d\n",value);
-    if (median < 17)if ((value < 17) && (value > 5)) {
+      value = atoi(in_buffer.cmd);
+      printf("%d\n",value);
+      index++;
+      if (index >= 5)index = 0;
+      med[index] = value;
+      median = (med[0] + med[1] + med[2] + med[3] + med[4]) / 5;
+      //printf("value:%d\n",value);
+      if (median < 17)if ((value < 17) && (value > 5))
+      {
         printf("%d stop!\n", value);
-
-        strcpy(buffer.cmd, "0\n");
-//usleep(100000);
-        n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
+        stop = 1;
+        strcpy(out_buffer.cmd, "0000");
+        out_buffer.loop = loop; //####################################################################################################
+        //usleep(100000);
+        n = write(sockfd, &out_buffer, sizeof(out_buffer)); 
+        //printf("geschrieben: %d\n",n );
         if (n < 0) {error("ERROR writing to socket");}
-
       }
+    }
   }
-
 }
 
 int main(int argc, char** argv)
@@ -164,6 +178,15 @@ int main(int argc, char** argv)
   int w = 0, a = 0, s = 0, d = 0, last = 0;
   while (1)
   {
+    if (stop == 1)
+    {
+      sleep(5);
+      stop = 0;
+      val = 0 , old = 0, send = 0;
+    }
+
+    bzero(&buffer, sizeof(buffer));
+    buffer.loop = loop; //####################################################################################################
     if (ps3) {
       fread ( hex, 1, 49, fp);
       val = (0x0f & (hex[1] >> 4));
@@ -189,7 +212,7 @@ int main(int argc, char** argv)
       default : strcpy(buffer.cmd, "0\n"); //d
 
       }
-      n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
+      n = write(sockfd, &buffer, sizeof(buffer));
       if (n < 0) {error("ERROR writing to socket");}
 
 
@@ -233,7 +256,7 @@ int main(int argc, char** argv)
         strcpy(buffer.cmd, "0\n");
       }
       // usleep(500000);
-      n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
+      n = write(sockfd, &buffer, sizeof(buffer));
       if (n < 0) {error("ERROR writing to socket");}
     }
   }
