@@ -76,9 +76,9 @@ void *thread(void *arg)
   int n;
   printf("wallthead running\n");
   while (1) {
-    bzero(&buffer, sizeof(buffer)-1);
+    bzero(&buffer, sizeof(struct msg));
 
-    n = read(sockfd, &buffer, sizeof(buffer)-1);
+    n = read(sockfd, &buffer, sizeof(struct msg));
     if (n < 0)
     {
       perror("ERROR reading from socket");
@@ -98,7 +98,7 @@ void *thread(void *arg)
 
         strcpy(buffer.cmd, "0\n");
         //usleep(100000);
-        n = write(sockfd, &buffer, sizeof(buffer)-1);
+        n = write(sockfd, &buffer, sizeof(struct msg));
         if (n < 0) {error("ERROR writing to socket");}
       }
   }
@@ -188,7 +188,7 @@ int main(int argc, char** argv)
       default : strcpy(buffer.cmd, "0\n"); //d
 
       }
-      n = write(sockfd, &buffer, sizeof(buffer)-1);
+      n = write(sockfd, &buffer, sizeof(struct msg));
       if (n < 0) {error("ERROR writing to socket");}
 
 
@@ -232,7 +232,7 @@ int main(int argc, char** argv)
         strcpy(buffer.cmd, "0\n");
       }
       // usleep(500000);
-      n = write(sockfd, &buffer, sizeof(buffer)-1);
+      n = write(sockfd, &buffer, sizeof(struct msg));
       if (n < 0) {error("ERROR writing to socket");}
     }
   }
