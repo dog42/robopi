@@ -78,7 +78,7 @@ void *thread(void *arg)
   while (1) {
     bzero(&buffer, sizeof(buffer));
 
-    n = read(sockfd, buffer.cmd, 2);
+    n = read(sockfd, &buffer, sizeof(buffer));
     if (n < 0)
     {
       perror("ERROR reading from socket");
@@ -86,23 +86,22 @@ void *thread(void *arg)
     }
 
     value = atoi(buffer.cmd);
-//printf("%d\n",value);
+    //printf("%d\n",value);
     index++;
     if (index >= 5)index = 0;
     med[index] = value;
     median = (med[0] + med[1] + med[2] + med[3] + med[4]) / 5;
-//printf("value:%d\n",value);
-    if (median < 17)if ((value < 17) && (value > 5)) {
+    //printf("value:%d\n",value);
+    if (median < 17)if ((value < 17) && (value > 5))
+      {
         printf("%d stop!\n", value);
 
         strcpy(buffer.cmd, "0\n");
-//usleep(100000);
-        n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
+        //usleep(100000);
+        n = write(sockfd, &buffer, sizeof(buffer));
         if (n < 0) {error("ERROR writing to socket");}
-
       }
   }
-
 }
 
 int main(int argc, char** argv)
@@ -189,7 +188,7 @@ int main(int argc, char** argv)
       default : strcpy(buffer.cmd, "0\n"); //d
 
       }
-      n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
+      n = write(sockfd, &buffer, sizeof(buffer));
       if (n < 0) {error("ERROR writing to socket");}
 
 
@@ -233,7 +232,7 @@ int main(int argc, char** argv)
         strcpy(buffer.cmd, "0\n");
       }
       // usleep(500000);
-      n = write(sockfd, buffer.cmd, strlen(buffer.cmd));
+      n = write(sockfd, &buffer, sizeof(buffer));
       if (n < 0) {error("ERROR writing to socket");}
     }
   }
