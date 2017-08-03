@@ -2,7 +2,7 @@
 pimac="b8:27:eb:b6:d6:06"
 piip="AF11::1"
 myip="AF11:1000::2"
-loop=30
+loop=0
 port=5006
 camport=5000
 sshport=666
