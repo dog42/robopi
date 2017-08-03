@@ -2,6 +2,7 @@
 pimac="b8:27:eb:b6:d6:06"
 piip="AF11::1"
 myip="AF11:1000::2"
+loop=30
 port=5006
 camport=5000
 sshport=666
@@ -15,7 +16,7 @@ sleep 3
 echo '>>>> WAIT...'
 sleep 3
 echo '>>>> START...'
-sudo ./robo_control6 $piip $port /dev/hidraw3 1
+sudo ./robo_control6 $piip $port /dev/hidraw3 1 $loop
 
 killall gst-launch-1.0
 killall robo

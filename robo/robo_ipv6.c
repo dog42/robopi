@@ -120,9 +120,7 @@ void *doprocessing (void *arg)
 
         if (buffer.loop > 0)
         {
-          printf("loop: %d\n",buffer.loop );
           buffer.loop = buffer.loop - 1;
-          printf("loop: %d\n",buffer.loop );
           n = write(newsockfd, &buffer, sizeof(buffer));
         }
         else

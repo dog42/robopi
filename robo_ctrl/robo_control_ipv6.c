@@ -91,14 +91,13 @@ void *thread(void *arg)
     }
     if (in_buffer.loop > 0)
     {
-      printf("loop: %d\n", in_buffer.loop );
       in_buffer.loop = in_buffer.loop - 1;
       //printf("loop: %d\n",in_buffer.loop );
       n = write(sockfd, &in_buffer, sizeof(in_buffer));
     } else {
 
       value = atoi(in_buffer.cmd);
-      printf("%d\n",value);
+      //printf("%d\n",value);
       index++;
       if (index >= 5)index = 0;
       med[index] = value;
@@ -109,8 +108,7 @@ void *thread(void *arg)
         printf("%d stop!\n", value);
         stop = 1;
         strcpy(out_buffer.cmd, "0000");
-        out_buffer.loop = loop; //####################################################################################################
-        //usleep(100000);
+        out_buffer.loop = loop; 
         n = write(sockfd, &out_buffer, sizeof(out_buffer)); 
         //printf("geschrieben: %d\n",n );
         if (n < 0) {error("ERROR writing to socket");}
@@ -129,13 +127,14 @@ int main(int argc, char** argv)
 //pthread_init();
 
   struct msg buffer;
-  if (argc != 5) {
-    fprintf(stderr, "usage: %s hostname port devicepath PS3(0/1)\ne.g.: sudo %s 192.168.1.215 5005 /dev/hidraw3 1\n", argv[0], argv[0] );
+  if (argc != 5 && argc != 6) {
+    fprintf(stderr, "usage: %s hostname port devicepath PS3(0/1)\ne.g.: sudo %s 192.168.1.215 5005 /dev/hidraw3 1 [loop_Nbr/2]\n", argv[0], argv[0] );
     exit(0);
   }
   portno = atoi(argv[2]);
   foo = atoi(argv[4]);
   if (foo == 1 || foo == 0) {ps3 = foo;}
+  if (argc == 6 && (0 < argv[5] < 255) ){loop= 2*(atoi(argv[5])); printf("loop is set to: %d\n", loop);}
   sockfd = socket(AF_INET6, SOCK_STREAM, 0);
   if (sockfd < 0)
     error("ERROR opening socket");
